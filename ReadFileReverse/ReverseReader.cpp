@@ -1,3 +1,16 @@
+/*
+  27. Задан  текстовый  файл. Каждая строка содержит не более 
+255 символов. Создать  новый  файл,  в  котором  строки  будут
+следовать в обратном порядке. Размер файла  не ограничивается.
+Запрещается размещать файл целиком в  основной  памяти.  Файлы
+размером порядка 10 Мгб должны обрабатываться не  более 2 сек.
+(9).
+
+Author: Олег Нечаев ПС-24
+Среда выполнения: MS VisualStudio2022 Community Edition
+Источники: 
+*/
+
 #include "ReverseReader.h";
 
 std::optional<Args> ParseArgs(int argc, char* argv[])
@@ -19,6 +32,7 @@ std::optional<Args> ParseArgs(int argc, char* argv[])
 
 void ReadFileReverse(std::istream& input, std::ostream& output)
 {
+	// TODO: Буфферизировать ввод, обрабатывать данный кусок и записывать в output
 	std::string line;
 	std::stack<int> breaksPos;
 
