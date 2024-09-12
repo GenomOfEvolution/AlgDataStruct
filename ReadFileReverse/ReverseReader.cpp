@@ -1,17 +1,17 @@
+#include "ReverseReader.h"
+
 /*
-  27. Р—Р°РґР°РЅ  С‚РµРєСЃС‚РѕРІС‹Р№  С„Р°Р№Р». РљР°Р¶РґР°СЏ СЃС‚СЂРѕРєР° СЃРѕРґРµСЂР¶РёС‚ РЅРµ Р±РѕР»РµРµ 
-255 СЃРёРјРІРѕР»РѕРІ. РЎРѕР·РґР°С‚СЊ  РЅРѕРІС‹Р№  С„Р°Р№Р»,  РІ  РєРѕС‚РѕСЂРѕРј  СЃС‚СЂРѕРєРё  Р±СѓРґСѓС‚
-СЃР»РµРґРѕРІР°С‚СЊ РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ. Р Р°Р·РјРµСЂ С„Р°Р№Р»Р°  РЅРµ РѕРіСЂР°РЅРёС‡РёРІР°РµС‚СЃСЏ.
-Р—Р°РїСЂРµС‰Р°РµС‚СЃСЏ СЂР°Р·РјРµС‰Р°С‚СЊ С„Р°Р№Р» С†РµР»РёРєРѕРј РІ  РѕСЃРЅРѕРІРЅРѕР№  РїР°РјСЏС‚Рё.  Р¤Р°Р№Р»С‹
-СЂР°Р·РјРµСЂРѕРј РїРѕСЂСЏРґРєР° 10 РњРіР± РґРѕР»Р¶РЅС‹ РѕР±СЂР°Р±Р°С‚С‹РІР°С‚СЊСЃСЏ РЅРµ  Р±РѕР»РµРµ 2 СЃРµРє.
+  27. Задан  текстовый  файл. Каждая строка содержит не более
+255 символов. Создать  новый  файл,  в  котором  строки  будут
+следовать в обратном порядке. Размер файла  не ограничивается.
+Запрещается размещать файл целиком в  основной  памяти.  Файлы
+размером порядка 10 Мгб должны обрабатываться не  более 2 сек.
 (9).
 
-Author: РћР»РµРі РќРµС‡Р°РµРІ РџРЎ-24
-РЎСЂРµРґР° РІС‹РїРѕР»РЅРµРЅРёСЏ: MS VisualStudio2022 Community Edition
-РСЃС‚РѕС‡РЅРёРєРё: 
+Author: Олег Нечаев ПС-24
+Среда выполнения: MS VisualStudio2022 Community Edition
+Источники:
 */
-
-#include "ReverseReader.h";
 
 std::optional<Args> ParseArgs(int argc, char* argv[])
 {
@@ -32,14 +32,26 @@ std::optional<Args> ParseArgs(int argc, char* argv[])
 
 void ReadFileReverse(std::istream& input, std::ostream& output)
 {
-	// TODO: Р‘СѓС„С„РµСЂРёР·РёСЂРѕРІР°С‚СЊ РІРІРѕРґ, РѕР±СЂР°Р±Р°С‚С‹РІР°С‚СЊ РґР°РЅРЅС‹Р№ РєСѓСЃРѕРє Рё Р·Р°РїРёСЃС‹РІР°С‚СЊ РІ output
-	std::string line;
 	std::stack<int> breaksPos;
+	int BUFFER_SIZE = 1024 * 1024;
+	int buffersRead = 0;
+	std::string line;
 
 	breaksPos.push(0);
-	while (std::getline(input, line))
+	while (input)
 	{
-		breaksPos.push(input.tellg());
+		std::vector<char> buffer(BUFFER_SIZE);
+		input.read(buffer.data(), buffer.size());
+		int i = 0;
+		for (i = 0; i < buffer.size(); i++)
+		{
+			if (buffer[i] == '\n')
+			{
+				i++;
+				breaksPos.push(i + buffersRead * BUFFER_SIZE);
+			}
+		}
+		buffersRead++;
 	}
 	breaksPos.pop();
 
@@ -50,21 +62,21 @@ void ReadFileReverse(std::istream& input, std::ostream& output)
 		breaksPos.pop();
 		std::getline(input, line);
 	
-		output << line << std::endl;
+		output << line << '\n';
 	}
 }
 
 void ReadReverse(const Args& args)
 {
 	std::ifstream inputStream;
-	inputStream.open(args.inputFileName);
+	inputStream.open(args.inputFileName, std::ios::binary);
 	if (!inputStream.is_open())
 	{
 		throw std::runtime_error("Failed to open " + args.inputFileName);
 	}
 
 	std::ofstream outputStream;
-	outputStream.open(args.outputFileName);
+	outputStream.open(args.outputFileName, std::ios::binary);
 	if (!inputStream.is_open())
 	{
 		throw std::runtime_error("Failed to open " + args.outputFileName);

@@ -3,6 +3,7 @@
 #include <optional>
 #include <iostream>
 #include <stack>
+#include <vector>
 
 struct Args
 {

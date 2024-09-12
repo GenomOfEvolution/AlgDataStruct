@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	auto stop = high_resolution_clock::now();
 
 	auto duration = duration_cast<microseconds>(stop - start);
-	std::cout << static_cast<double>(duration.count()) / 1000000 << std::endl;
+	std::cout << "Elapsed time: " << static_cast<double>(duration.count()) / 1000000 << std::endl;
 
 	return EXIT_SUCCESS;
 }
