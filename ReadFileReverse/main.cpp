@@ -1,10 +1,11 @@
-#include "ReverseReader.h";
+#include "ReverseReader.h"
 #include <chrono>
 using namespace std::chrono;
 
 int main(int argc, char* argv[]) 
 {
-	auto start = high_resolution_clock::now();
+	unsigned int start_time = clock();
+
 	std::optional<Args> args = ParseArgs(argc, argv);
 	if (!args)
 	{
@@ -19,10 +20,9 @@ int main(int argc, char* argv[])
 	{
 		std::cout << e.what() << std::endl;
 	}
-	auto stop = high_resolution_clock::now();
+	unsigned int end_time = clock();
 
-	auto duration = duration_cast<microseconds>(stop - start);
-	std::cout << "Elapsed time: " << static_cast<double>(duration.count()) / 1000000 << std::endl;
+	std::cout << "Elapsed time: " << end_time - start_time << std::endl;
 
 	return EXIT_SUCCESS;
 }
