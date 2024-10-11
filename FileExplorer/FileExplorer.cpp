@@ -112,6 +112,11 @@ void FileExplorer::CopyElem(Tree* node)
 
 void FileExplorer::ExtractElem(Tree*& node)
 {
+    if (buffer != nullptr && isExtractMode)
+    {
+        return;
+    }
+
     isExtractMode = true;
     DeleteTree(buffer);
     buffer = CopyTree(node);
@@ -156,6 +161,9 @@ void FileExplorer::PasteNode(Tree*& curNode)
     if (isExtractMode)
     {
         curNode->children.push_back(CopyTree(buffer));
+        Tree* pastedNode = curNode->children[curNode->children.size() - 1];
+        pastedNode->parent = curNode;
+        pastedNode->depth = curNode->depth + 1;
         isExtractMode = false;
         DeleteTree(buffer);
         buffer = nullptr;
@@ -163,6 +171,9 @@ void FileExplorer::PasteNode(Tree*& curNode)
     else
     {
         curNode->children.push_back(buffer);
+        curNode->children[curNode->children.size() - 1]->parent = curNode;
+        curNode->children[curNode->children.size() - 1]->depth = curNode->depth + 1;
+        
         buffer = CopyTree(buffer);
     }
 }

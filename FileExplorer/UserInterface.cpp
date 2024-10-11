@@ -204,6 +204,11 @@ bool UserInterface::CreateFileElement()
 
 bool UserInterface::EditName()
 {
+	if (cursorPos == -1)
+	{
+		return true;
+	}
+
 	storage.ChangeName(curElem, NameInput());
 	DrawStorage();
 	return true;
@@ -239,6 +244,17 @@ bool UserInterface::DeleteElement()
 			if (cursorPos != -1)
 			{
 				curElem = curElemParent->children[cursorPos];
+			}
+			else
+			{
+				curElem = nullptr;
+			}
+		}
+		else
+		{
+			if (curElemParent != nullptr)
+			{
+				curElem = curElemParent->children[curElemParent->children.size() - 1];
 			}
 			else
 			{
@@ -308,6 +324,11 @@ bool UserInterface::EnterElement()
 	}
 	else //Заходим глубже
 	{
+		if (curElem == nullptr)
+		{
+			return true;
+		}
+
 		if (!curElem->isFile)
 		{
 			curElemParent = curElem;
@@ -345,8 +366,6 @@ bool UserInterface::PasteElement()
 {
 	storage.PasteNode(curElemParent);
 	CalcBounds(curElemParent);
-	curElem = curElemParent->children[curElemParent->children.size() - 1];
-	cursorPos = (int)curElemParent->children.size() - 1;
 	DrawStorage();
 
 	return true;
@@ -354,7 +373,25 @@ bool UserInterface::PasteElement()
 
 bool UserInterface::ExtractElement()
 {
+	if (curElem == nullptr)
+	{
+		return true;
+	}
+
 	storage.ExtractElem(curElem);
+
+	if (curElemParent != nullptr)
+	{
+		if (!curElemParent->children.empty())
+		{
+			curElem = curElemParent->children[cursorPos];
+		}
+		else
+		{
+			curElem = nullptr;
+		}
+	}
+
 	CalcBounds(curElemParent);
 	DrawStorage();
 

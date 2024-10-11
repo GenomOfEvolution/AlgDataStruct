@@ -22,13 +22,16 @@ int main(int argc, char* argv[])
 {
     setlocale(LC_ALL, "RU");
 
-    std::optional<Args> args = ParseArgs(argc, argv);
+    /*std::optional<Args> args = ParseArgs(argc, argv);
     if (!args)
     {
         return EXIT_FAILURE;
-    }
+    }*/
 
-    FileExplorer explorer(*args);
+    Args args;
+    args.inputFileName = "Storage.txt";
+
+    FileExplorer explorer(args);
     UserInterface UI(explorer);
     bool UIanswer = true;
 
