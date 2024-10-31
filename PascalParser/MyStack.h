@@ -1,9 +1,11 @@
 #include <stdexcept>
 
 template <typename T>
-class MyStack {
+class MyStack 
+{
 private:
-    struct Node {
+    struct Node 
+    {
         T data;
         Node* next = nullptr;   
         Node(T value) : data(value), next(nullptr) {} 
@@ -30,7 +32,8 @@ public:
         top = newNode; 
     }
 
-    T pop() {
+    T pop() 
+    {
         if (isEmpty()) 
         {
             throw std::runtime_error("Стек пуст. Невозможно удалить элемент."); 
@@ -44,8 +47,8 @@ public:
         return poppedValue; 
     }
 
-    bool isEmpty() 
+    bool isEmpty()
     {
-        return top == nullptr; // Если указатель на верхний элемент равен nullptr, стек пуст
+        return top == nullptr;
     }
 };

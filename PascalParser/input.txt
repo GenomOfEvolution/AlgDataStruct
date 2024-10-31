@@ -1,0 +1,6 @@
+PROGRAM Hahaha(INPUT, OUTPUT);
+BEGIN
+  REPEAT
+  
+  UNTIL();
+END.

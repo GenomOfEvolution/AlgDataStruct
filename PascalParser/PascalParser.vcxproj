@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{fd2a1b89-7d17-430f-af32-23eb91cbcbc5}</ProjectGuid>
-    <RootNamespace>calculator</RootNamespace>
+    <ProjectGuid>{8d761184-7f10-47da-a4ff-0baab7a1fd2a}</ProjectGuid>
+    <RootNamespace>PascalParser</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -131,8 +131,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="calculator.cpp" />
-    <ClCompile Include="MyStack.h" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PascalParser.cpp" />
+    <ClCompile Include="PascalParser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MyStack.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
