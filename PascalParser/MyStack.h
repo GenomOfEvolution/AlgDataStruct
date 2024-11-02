@@ -47,8 +47,30 @@ public:
         return poppedValue; 
     }
 
+    T peek()
+    {
+        return top->data;
+    }
+
     bool isEmpty()
     {
         return top == nullptr;
+    }
+
+    int count()
+    {
+        if (top == nullptr)
+        {
+            return 0;
+        }
+
+        int counter = 1;
+        Node* curNode = this->top;
+        while (curNode->next != nullptr)
+        {
+            counter++;
+            curNode = curNode->next;
+        }
+        return counter;
     }
 };

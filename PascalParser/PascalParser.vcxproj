@@ -132,11 +132,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PascalParser.cpp" />
-    <ClCompile Include="PascalParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyStack.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
