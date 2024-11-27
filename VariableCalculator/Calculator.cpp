@@ -210,7 +210,7 @@ std::string Calculator::PostfixToInfix(MyStack<std::string>& tokens)
 
 std::string Calculator::AddBracketsIfNeeded(const std::string& expr, int outerPriority, int innerPriority)
 {
-	if (outerPriority > innerPriority)
+	if (outerPriority >= innerPriority)
 	{
 		return "(" + expr + ")";
 	}
