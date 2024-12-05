@@ -21,6 +21,12 @@
     <ClCompile Include="Calculator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="catch2\catch_amalgamated.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyStack.h">
@@ -29,12 +35,18 @@
     <ClInclude Include="Calculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="catch2\catch_amalgamated.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="input2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="errors.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

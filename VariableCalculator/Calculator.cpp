@@ -1,4 +1,4 @@
-#include "Calculator.h"
+﻿#include "Calculator.h"
 
 Calculator::Calculator() {	}
 
@@ -109,7 +109,7 @@ void Calculator::ParseToken(const std::string& token, MyStack<std::string>& stac
 			{
 				if (!CheckOper(oper))
 				{
-					throw std::runtime_error("����������� ��������: " + oper);
+					throw std::runtime_error("Неизвестный оператор: " + oper);
 				}
 
 				stack.push(oper);
@@ -132,7 +132,7 @@ void Calculator::ParseToken(const std::string& token, MyStack<std::string>& stac
 	{
 		if (!CheckOper(oper))
 		{
-			throw std::runtime_error("����������� ��������: " + oper);
+			throw std::runtime_error("Неизвестный оператор: " + oper);
 		}
 		stack.push(oper);
 	}
@@ -148,12 +148,12 @@ void Calculator::EnterVariable(char ch)
 	int ans;
 	while (true)
 	{
-		std::cout << "������� �������� ��� " << ch << ": ";
+		std::cout << "Введите значение для " << ch << ": ";
 		if (std::cin >> ans)
 			break;
 		else
 		{
-			std::cout << "������: ������� �� ����� �����. ���������� �����.\n";
+			std::cout << "Ошибка: введено не целое число. Попробуйте снова.\n";
 			std::cin.clear();
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
@@ -179,30 +179,69 @@ std::string Calculator::PostfixToInfix(MyStack<std::string>& tokens)
 		{
 			ToUpperCase(token);
 		}
-		
+
 		auto it = operatorPriority.find(token);
-		if (it != operatorPriority.end()) 
+
+		// Нашли переменную
+		if (it == operatorPriority.end())
 		{
-			int priority = it->second;
-			if (priority == 4 || priority > 3) 
-			{ 
-				auto op = stack.pop();
-				std::string expr = token == "~" ? "(-" + op.first + ")" : token + "(" + op.first + ")";
-				stack.push({ expr, priority });
-			}
-			else 
-			{ 
-				auto op2 = stack.pop();
-				auto op1 = stack.pop();
-				std::string expr = AddBracketsIfNeeded(op1.first, priority, op1.second) + " " + token + " " + AddBracketsIfNeeded(op2.first, priority, op2.second);
-				stack.push({ expr, priority });
-			}
-		}
-		else
-		{ 
-			stack.push({ token, 6 }); 
+			stack.push({ token, 6 });
+			continue;
 		}
 
+		int priority = it->second;
+		if (token == "SIN" || token == "COS" || token == "EXP")
+		{
+			auto op = stack.pop();
+			stack.push({ token + "(" + op.first + ")", priority });
+			continue;
+		}
+
+		if (token == "~") // Унарный минус
+		{
+			auto nextToken = stack.pop();
+			std::string modifiedToken;
+
+			if (nextToken.second == 6)
+			{
+				modifiedToken = "-" + nextToken.first;
+			}
+			else
+			{
+				modifiedToken = "-(" + nextToken.first + ")";
+			}
+
+			// Приоритет у итогового выражения как у унарного минуса.
+			stack.push({ modifiedToken, operatorPriority.at("~") });
+		}
+
+		if (token == "-" || token == "*" || token == "+" || token == "/" || token == "^")
+		{
+			// Правый операнд
+			auto op2 = stack.pop();
+			// Левый операнд
+			auto op1 = stack.pop();
+
+			std::string leftExpr = op1.first;
+			std::string rightExpr = op2.first;
+
+			if (op1.second <= priority && !(op1.second == 6 && priority < 6))
+			{
+				leftExpr = "(" + op1.first + ")";
+			}
+
+			if (op2.second < priority || (op2.second == priority && token == "^"))
+			{
+				rightExpr = "(" + op2.first + ")";
+			}
+			
+			if ((token == "/" || token == "-") && op2.second != 6)
+			{
+				rightExpr = "(" + op2.first + ")";
+			}
+
+			stack.push({ leftExpr + " " + token + " " + rightExpr, priority});
+		}
 	}
 
 	return stack.pop().first;
@@ -214,10 +253,11 @@ std::string Calculator::AddBracketsIfNeeded(const std::string& expr, int outerPr
 	{
 		return "(" + expr + ")";
 	}
+
 	return expr;
 }
 
-void Calculator::Calc(std::ifstream& input)
+std::string Calculator::Calc(std::ifstream& input)
 {
 	MyStack<std::string> revTokens;
 	MyStack<std::string> tokens;
@@ -232,14 +272,22 @@ void Calculator::Calc(std::ifstream& input)
 	revTokens.Copy(tokens2);
 	ReverseStack(revTokens, tokens);
 
+	std::string res;
+	std::stringstream ss;
+	ss << Calculate(tokens2);
 
-	std::cout << PostfixToInfix(tokens) << " = " << Calculate(tokens2);
-	if (variables.size() > 0)
+
+	res +=  PostfixToInfix(tokens) + " = " + ss.str();
+	std::cout << res << "\n\n";
+	/*if (variables.size() > 0)
 	{
 		std::cout << ", \n";
 		for (auto i : variables)
 		{
 			std::cout << i.first << " = " << i.second << "\n";
 		}
-	}
+		std::cout << "\n";
+	}*/
+
+	return res;
 }

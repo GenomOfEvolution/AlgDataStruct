@@ -15,39 +15,39 @@
 // Author: Нечаев Олег ПС-24
 // Среда разработки: MS VisualStudio cpp20
 
-#include "Calculator.h"
-
-int main()
-{
-	setlocale(LC_ALL, "RU");
-	std::string answer = "y";
-
-	while (answer == "y")
-	{
-		Calculator calculator;
-		std::string filename;
-		std::cout << "Введите имя файла: ";
-		std::cin >> filename;
-		
-		std::ifstream input(filename);
-		if (!input)
-		{
-			std::cout << "Не удалось открыть файл: " << filename << "\n";
-			continue;
-		}
-
-		try
-		{
-			calculator.Calc(input);
-		}
-		catch (const std::exception& e)
-		{
-			std::cout << e.what();
-		}
-		std::cout << "\nЕще раз(y): ";
-		std::cin >> answer;
-		std::cout << "\n";
-	}
-	
-	return EXIT_SUCCESS;
-}
+//#include "Calculator.h"
+//
+//int main()
+//{
+//	setlocale(LC_ALL, "RU");
+//	std::string answer = "y";
+//
+//	while (answer == "y")
+//	{
+//		Calculator calculator;
+//		std::string filename;
+//		std::cout << "Введите имя файла: ";
+//		std::cin >> filename;
+//		
+//		std::ifstream input(filename);
+//		if (!input)
+//		{
+//			std::cout << "Не удалось открыть файл: " << filename << "\n";
+//			continue;
+//		}
+//
+//		try
+//		{
+//			calculator.Calc(input);
+//		}
+//		catch (const std::exception& e)
+//		{
+//			std::cout << e.what();
+//		}
+//		std::cout << "\nЕще раз(y): ";
+//		std::cin >> answer;
+//		std::cout << "\n";
+//	}
+//	
+//	return EXIT_SUCCESS;
+//}

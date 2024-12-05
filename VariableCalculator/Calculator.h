@@ -5,6 +5,7 @@
 #include <cmath>
 #include <map>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <iostream>
 
@@ -12,10 +13,10 @@ class Calculator
 {
 public:
 	Calculator();
-	void Calc(std::ifstream& input);
-
-private:
+	std::string Calc(std::ifstream& input);
 	std::map<char, int> variables;
+private:
+	
 	const std::map<std::string, int> operatorPriority = {
 		{ "+", 1 },
 		{ "-", 1 },
