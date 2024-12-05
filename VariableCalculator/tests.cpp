@@ -53,9 +53,6 @@ TEST_CASE("Проверить правильность скобок")
 		"-a - (-b - c) = -28"
 	};
 
-	std::ofstream errorsFile("errors.txt");
-	errorsFile << "---------------------\na = 1, b = 2, c = 3\n---------------------\n";
-
 	for (int i = 0; i < testCases.size(); i++)
 	{
 		if (i == 6)
@@ -63,7 +60,6 @@ TEST_CASE("Проверить правильность скобок")
 			calculator.variables['a'] = 40;
 			calculator.variables['b'] = 10;
 			calculator.variables['c'] = 2;
-			errorsFile << "---------------------\na = 40, b = 10, c = 2\n---------------------\n";
 		}
 
 		std::string tempFilename = "tempfile.txt";
@@ -74,15 +70,9 @@ TEST_CASE("Проверить правильность скобок")
 		std::ifstream ifs(tempFilename);
 		std::cout << "Input: " << testCases[i] << "\n";
 		std::string res = calculator.Calc(ifs);
+		std::string prikol = testAnswers[i];
 
-		if (res != testAnswers[i])
-		{
-			errorsFile << "Inpt:  " << testCases[i] << "\n";
-			errorsFile << "Outp:  " << testAnswers[i] << "\n";
-			errorsFile << "MyAns: " << res << "\n\n";
-		}
-
-		//REQUIRE(calculator.Calc(ifs) == testAnswers[i]);
+		REQUIRE(res == prikol);
 		std::remove(tempFilename.c_str());
 	}
 }

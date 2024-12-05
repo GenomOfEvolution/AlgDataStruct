@@ -230,14 +230,22 @@ std::string Calculator::PostfixToInfix(MyStack<std::string>& tokens)
 				leftExpr = "(" + op1.first + ")";
 			}
 
+			bool wereBracketsPlaced = false;
 			if (op2.second < priority || (op2.second == priority && token == "^"))
 			{
+				wereBracketsPlaced = true;
 				rightExpr = "(" + op2.first + ")";
 			}
 			
 			if ((token == "/" || token == "-") && op2.second != 6)
 			{
+				wereBracketsPlaced = true;
 				rightExpr = "(" + op2.first + ")";
+			}
+
+			if (!wereBracketsPlaced && op2.second != 6 && rightExpr[0] == '-')
+			{
+				rightExpr = "(" + rightExpr.substr(0, 2) + ")" + rightExpr.substr(2, rightExpr.size());
 			}
 
 			stack.push({ leftExpr + " " + token + " " + rightExpr, priority});
