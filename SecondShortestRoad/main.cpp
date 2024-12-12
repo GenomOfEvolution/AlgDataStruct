@@ -1,282 +1,152 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <vector>
-#include <unordered_map>
+#include <utility>
 #include <queue>
 #include <string>
 
-const int INF = 2000000;
+// Общими требованиями к лабораторной работе являются :
+// 1) вводить  граф из файла в понятной для пользователя форме
+// (не в виде матрицы смежности, без дублирования информации и т. п.);
+// 2) обеспечить   возможность   многократных   запросов   без
+// повторного запуска программы.
 
-struct Edge 
+
+// 26. Имеется сеть автомобильных дорог.По  некоторым дорогам
+// можно  проехать  только  в одном  направлении.Известна  длина
+// каждой дороги, причем она может быть разной в  зависимости  от
+// направления.Один  из  городов  является  столицей.Требуется
+// вывести список длин вторых по минимальности путей из столицы в
+// другие города.Допускается присутствие циклических путей(12).
+
+/*
+Решение.
+В вершинах по две числовые метки.
+Первая для нахождения кратчайшего пути, а вторая - для второго по минимальности пути.
+Первая метка может получаться только из первых меток, а вторая метка может быть найдена из предыдущих меток обоих типов.
+В скобках после каждой метки для наглядности указываются два числа.
+Первое число определяет номер предыдущей вершины, а второе – тип предыдущей метки, первый или второй, на основании которой была вычислена текущая метка.
+*/
+
+const int INF = 10000000;
+
+std::vector<int> DjikstraWithSecondPath(const std::vector<std::vector<std::pair<int, int>>>& g, int src) 
 {
-    int to;
-    int weight;
-};
+    int n = (int)(g.size());
+    std::vector<int> d(n, INF), d2(n, INF); 
+    std::vector<std::pair<int, int>> p(n, { -1, -1 }); 
+    d[src] = 0;
 
-class Graph
-{
-public:
-    void ReadEdges(std::ifstream& input);
-    void PrintEdges();
-    std::unordered_map<int, int> SecondShortest(int s, std::unordered_map<int, std::vector<int>> paths);
+    std::priority_queue<std::pair<int, std::pair<int, int>>, std::vector<std::pair<int, std::pair<int, int>>>, std::greater<std::pair<int, std::pair<int, int>>>> q;
+    q.push({ 0, { src, 1 } }); 
 
-    std::unordered_map<int, std::vector<int>> djikstraPaths(int s);
-
-private:
-    std::unordered_map<int, std::vector<Edge>> data;
-    void SetWeight(int from, int to, int weight);
-
-    std::unordered_map<int, int> djikstra(int s);
-};
-
-struct CompareEdge 
-{
-    bool operator()(const Edge& a, const Edge& b) const 
+    while (!q.empty()) 
     {
-        return a.weight < b.weight || (a.weight == b.weight && a.to < b.to);
-    }
-};
+        auto [du, pair] = q.top();
+        auto [u, labelType] = pair;
+        q.pop();
 
-void Graph::ReadEdges(std::ifstream& input)
-{
-    int left, right, weight;
-
-    while (input)
-    {
-        input >> left >> right >> weight;
-        if (weight < 0)
-        {
-            throw new std::runtime_error("\n��� ����� ������ ���� �� �������������!\n");
-        }
-
-        Edge edge;
-        edge.to = right;
-        edge.weight = weight;
-
-        data[left].push_back(edge);
-    }
-}
-
-void Graph::PrintEdges()
-{
-    for (auto i : data)
-    {
-        std::cout << "Vertex " << i.first << ": \n";
-        for (auto j : data[i.first])
-        {
-            std::cout << "   -> " << j.to << " with weight " << j.weight << "\n";
-        }
-    }
-}
-
-std::unordered_map<int, int> Graph::SecondShortest(int s, std::unordered_map<int, std::vector<int>> paths)
-{
-    if (data.find(s) == data.end())
-    {
-        std::string line = "��� ������� � �������� " + std::to_string(s) + "\n";
-        throw std::runtime_error(line);
-    }
-
-    std::unordered_map<int, int> dist;
-
-    for (auto i : paths)
-    {
-        if (i.second.size() < 2)
+        if ((labelType == 1 && du != d[u]) || (labelType == 2 && du != d2[u])) 
         {
             continue;
         }
 
-        auto points = i.second;
-        int secShortest = INF;
-        for (int j = points.size() - 1; j > 0; j--)
+        for (auto& [w, v] : g[u]) 
         {
-            // ������� ������ �����
-            int startIndex = points[j - 1];
-            int endIndex = points[j];
-            auto p = data[startIndex];
-
-            // ���������� ��� ���
-            int weight = 0;
-            for (auto k : p)
+            if (du + w < d[v]) 
             {
-                if (k.to == endIndex)
-                {
-                    weight = k.weight;
-                    break;
-                }
+                d2[v] = d[v];
+                d[v] = du + w;
+                p[v] = { u, 1 }; 
+                q.push({ d[v], { v, 1 } });
+                q.push({ d2[v], { v, 2 } }); 
             }
-
-            // ������ ��� ��� �����������
-            SetWeight(startIndex, endIndex, INF);
-
-            // ������� ���������� ����
-            auto res = djikstra(s);
-            int newWeight = res[i.first];
-
-            if (newWeight < secShortest)
+            else if (du + w > d[v] && du + w < d2[v]) 
             {
-                secShortest = newWeight;
+                d2[v] = du + w;
+                p[v] = { u, 2 }; 
+                q.push({ d2[v], {v, 2} });
             }
-
-            // ���������� ��� �����
-            SetWeight(startIndex, endIndex, weight);
         }
-        dist[i.first] = secShortest;
     }
 
-    return dist;
+    return d2;
 }
 
-std::unordered_map<int, std::vector<int>> Graph::djikstraPaths(int s) 
+std::vector<std::vector<std::pair<int, int>>> ReadGraph(std::ifstream& input)
 {
-    std::unordered_map<int, int> dist;
-    std::unordered_map<int, int> predecessors;
-    std::unordered_map<int, std::vector<int>> paths;
+    std::vector<std::vector<std::pair<int, int>>> graph;
 
-    for (const auto& pair : data) 
+    int u, v, w;
+    int maxIndex = -1;
+    while (input >> u >> v >> w)
     {
-        dist[pair.first] = INF;
-    }
-    dist[s] = 0;
+        maxIndex = std::max(maxIndex, std::max(u, v));
 
-    std::priority_queue<Edge, std::vector<Edge>, CompareEdge> q;
-    q.push(Edge(s, 0));
-
-    while (!q.empty()) 
-    {
-        Edge edge = q.top();
-        q.pop();
-        int v = edge.to;
-
-        for (auto& e : data[v]) {
-            int to = e.to;
-            int len = e.weight;
-
-            if (dist[v] + len < dist[to]) 
-            {
-                dist[to] = dist[v] + len;
-                predecessors[to] = v; 
-                q.push(Edge(to, dist[to]));
-            }
-        }
-    }
-
-    // �������������� �����
-    for (const auto& pair : dist) 
-    {
-        int current = pair.first;
-        std::vector<int> path;
-        while (current != s && predecessors.find(current) != predecessors.end()) 
+        if (maxIndex >= graph.size())
         {
-            path.push_back(current);
-            current = predecessors[current];
+            graph.resize(maxIndex + 1);
         }
 
-        if (current == s) 
-        {
-            path.push_back(s);
-            std::reverse(path.begin(), path.end());
-            paths[pair.first] = path;
-        }
+        graph[u].push_back(std::make_pair(w, v));
     }
 
-    return paths;
+    return graph;
 }
 
-void Graph::SetWeight(int from, int to, int weight)
+void PrintPaths(std::ofstream& output, const std::vector<int>& paths)
 {
-    if (data.find(from) != data.end())
+    
+    for (int i = 2; i < paths.size(); i++)
     {
-        for (int i = 0; i < data[from].size(); i++)
+        if (paths[i] == INF)
         {
-            if (data[from].at(i).to == to)
-            {
-                data[from].at(i).weight = weight;
-                break;
-            }
+            output << "No\n";
+        }
+        else
+        {
+            output << paths[i] << "\n";
         }
     }
-}
-
-std::unordered_map<int, int> Graph::djikstra(int s)
-{
-    if (data.find(s) == data.end())
-    {
-        std::string line = "��� ������� � �������� " + std::to_string(s) + "\n";
-        throw std::runtime_error(line);
-    }
-
-    std::unordered_map<int, int> dist;
-
-    for (const auto& pair : data)
-    {
-        dist[pair.first] = INF;
-    }
-    dist[s] = 0;
-
-    std::priority_queue<Edge, std::vector<Edge>, CompareEdge> q;
-    q.push(Edge(s, 0));
-
-    while (!q.empty())
-    {
-        Edge edge = q.top();
-        q.pop();
-        int v = edge.to;
-
-        for (auto& e : data[v])
-        {
-            int to = e.to;
-            int len = e.weight;
-
-            if (dist[v] + len < dist[to])
-            {
-                dist[to] = dist[v] + len;
-                q.push(Edge(to, dist[to]));
-            }
-        }
-    }
-
-    return dist;
 }
 
 int main()
 {
     setlocale(LC_ALL, "RU");
 
-    Graph g;
+	std::ifstream input;
+    std::ofstream outfile;
 
-    std::ifstream input;
-    input.open("input.txt");
+    std::string inputName;
+    std::string outputName;
+    std::string answ = "y";
 
-    if (!input)
+    do
     {
-        return EXIT_FAILURE;
-    }
+        std::cout << "Введите имя входного файла: ";
+        std::cin >> inputName;
 
-    try
-    {
-        g.ReadEdges(input);
-    }
-    catch (const std::exception& e)
-    {
-        std::cout << e.what();
-    }
+        input.open(inputName);
 
-    try
-    {
-        std::unordered_map<int, std::vector<int>> res = g.djikstraPaths(1);
-        auto secondShortest = g.SecondShortest(1, res);
-
-        for (auto i : secondShortest)
+        if (!input)
         {
-            std::cout << "To " << i.first << " = " << i.second << "\n";
+            std::cout << "Can't open " << inputName << "\n";
+            continue;
         }
-        
-    }
-    catch (const std::runtime_error& e)
-    {
-        std::cout << e.what();
-    }
 
-    return EXIT_SUCCESS;
+        std::vector<std::vector<std::pair<int, int>>> graph = ReadGraph(input);
+        std::vector<int> shortestPaths = DjikstraWithSecondPath(graph, 1);
+
+        std::cout << "Введите имя выходного файла: ";
+        std::cin >> outputName;
+
+        outfile.open(outputName, std::ios::trunc);
+        PrintPaths(outfile, shortestPaths);
+
+        std::cout << "Еще раз? (y/n): ";
+        std::cin >> answ;
+
+    } while (answ == "Y" || answ == "y");
+
+	return EXIT_SUCCESS;
 }
