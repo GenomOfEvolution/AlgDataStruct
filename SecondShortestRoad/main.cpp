@@ -53,7 +53,7 @@ std::vector<int> DjikstraWithSecondPath(const std::vector<std::vector<std::pair<
 
         for (auto& [w, v] : g[u]) 
         {
-            if (du + w < d[v]) 
+            if (du + w <= d[v]) 
             {
                 d2[v] = d[v];
                 d[v] = du + w;
